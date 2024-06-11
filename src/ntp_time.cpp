@@ -73,7 +73,6 @@ bool ntp_time::send_packet() {
     ip_addr_t addy;
     IP_ADDR4( &addy, 0,0,0,0 );
     if(!ntp_time_resolve_host(domain,&addy)) {
-        puts("resolution failure");
         return false;
     }
     m_addr.sin_addr.s_addr = addy.u_addr.ip4.addr;
@@ -82,7 +81,6 @@ bool ntp_time::send_packet() {
     m_socket = socket(AF_INET,SOCK_DGRAM,0);
     if(m_socket<0) {
         m_socket = -1;
-        puts("packet send failure");
         return false;
     }
     int flags = fcntl(m_socket, F_GETFL, 0);
@@ -92,11 +90,9 @@ bool ntp_time::send_packet() {
     {
         close(m_socket);
         m_socket = -1;
-        puts("packet send failure");
         return false;
     }
 #endif
-    puts("sent packet");
     return true;
 }
 bool ntp_time::begin_request(size_t retry_count,
