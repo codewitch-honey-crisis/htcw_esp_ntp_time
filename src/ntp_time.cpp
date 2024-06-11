@@ -149,27 +149,29 @@ bool ntp_time::update() {
         }
     }
     bool result = false;
+    if(m_requesting) {
 #ifdef ARDUINO
-    // read the packet into the buffer
-    // if we got a packet from NTP, read it
-    if (0 < g_ntp_time_udp.parsePacket()) {
-        g_ntp_time_udp.read(m_packet_buffer, 48); 
+        // read the packet into the buffer
+        // if we got a packet from NTP, read it
+        if (0 < g_ntp_time_udp.parsePacket()) {
+            g_ntp_time_udp.read(m_packet_buffer, 48); 
 
-        result = true;
-    }
+            result = true;
+        }
 #else
-    if(m_socket<0) {
-        return false;
-    }
-    socklen_t from_len = sizeof(m_packet_buffer);
-    int retcode = recvfrom(m_socket, m_packet_buffer, sizeof(m_packet_buffer), 0,
-      (struct sockaddr *)&m_addr,&from_len);
-    if(retcode>0) {
-        close(m_socket);
-        m_socket = -1;
-        result = true;
-    }
+        if(m_socket<0) {
+            return false;
+        }
+        socklen_t from_len = sizeof(m_packet_buffer);
+        int retcode = recvfrom(m_socket, m_packet_buffer, sizeof(m_packet_buffer), 0,
+        (struct sockaddr *)&m_addr,&from_len);
+        if(retcode>0) {
+            close(m_socket);
+            m_socket = -1;
+            result = true;
+        }
 #endif
+    }
     if(result) {
         //the timestamp starts at byte 40 of the received packet and is four bytes,
         // or two words, long. First, extract the two words:

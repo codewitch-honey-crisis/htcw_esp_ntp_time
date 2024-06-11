@@ -1,6 +1,6 @@
 {
     "name": "htcw_esp_ntp_time",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Provides cross platform access to pool.ntp.org's time service",
     "keywords": ["wifi", "esp32","time", "NTP"],
     "authors": {
