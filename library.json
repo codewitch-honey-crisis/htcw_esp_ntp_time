@@ -1,0 +1,18 @@
+{
+    "name": "htcw_esp_ntp_time",
+    "version": "0.1.0",
+    "description": "Provides cross platform access to pool.ntp.org's time service",
+    "keywords": ["wifi", "esp32","time", "NTP"],
+    "authors": {
+        "name":"honey the codewitch",
+        "homepage": "https://www.codeproject.com/Members/code-witch"
+    },
+    "license": "MIT",
+    "frameworks": ["arduino", "espidf"],
+    "platforms": "espressif32",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/codewitch-honey-crisis/htcw_esp_ntp_time.git"
+    }
+}
