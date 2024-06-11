@@ -31,28 +31,34 @@ static ip_addr_t ntp_time_resolve_host_ip;
 static void ntp_time_resolve_host_wait() {
     while(ntp_time_resolve_host_state!=0) {
         static int count = 0;
-        while(count++<7) {
+        if(count++>6) {
             vTaskDelay(5);
+            count = 0;
         }
     }
 }
 static void ntp_time_resolve_host_handler(const char *name, const ip_addr_t *ipaddr, void *callback_arg) {
     if(ipaddr!=nullptr) {
-        ntp_time_resolve_host_state = 0;
         ntp_time_resolve_host_ip = *ipaddr;
     } else {
         IP_ADDR4( &ntp_time_resolve_host_ip, 0,0,0,0 );    
     }
+    ntp_time_resolve_host_state = 0;
 }
 static bool ntp_time_resolve_host(const char* hostname, ip_addr_t* out_address) {
     ntp_time_resolve_host_wait();
-    ntp_time_resolve_host_state = 1;
-    dns_gethostbyname(hostname,&ntp_time_resolve_host_ip,ntp_time_resolve_host_handler,nullptr);
-    ntp_time_resolve_host_wait();
-    *out_address = ntp_time_resolve_host_ip;
-    if(out_address->u_addr.ip4.addr!=0) {
+    err_t ec = dns_gethostbyname(hostname,&ntp_time_resolve_host_ip,ntp_time_resolve_host_handler,nullptr);
+    if(-5==ec) {
+        ntp_time_resolve_host_state = 1;
+        ntp_time_resolve_host_wait();
+        *out_address = ntp_time_resolve_host_ip;
+        if(out_address->u_addr.ip4.addr!=0) {
+            return true;
+        }
+    } else if(0==ec) {
+        *out_address = ntp_time_resolve_host_ip;
         return true;
-    }
+    } 
     return false;   
 }
 #endif
